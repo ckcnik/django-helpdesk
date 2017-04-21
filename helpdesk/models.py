@@ -20,7 +20,10 @@ from django.utils.encoding import python_2_unicode_compatible
 
 @python_2_unicode_compatible
 class SLA(models.Model):
-    name = models.CharField(_('Name'), max_length=100)
+    title = models.CharField(_('Title'), max_length=100)
+
+    def __str__(self):
+        return "%s" % self.title
 
     class Meta:
         verbose_name = _('SLA')

@@ -3,13 +3,12 @@ from django.utils.translation import ugettext_lazy as _
 from helpdesk.models import Queue, Ticket, FollowUp, PreSetReply, KBCategory
 from helpdesk.models import EscalationExclusion, EmailTemplate, KBItem
 from helpdesk.models import TicketChange, Attachment, IgnoreEmail
-from helpdesk.models import CustomField
+from helpdesk.models import CustomField, SLA
 
 
 @admin.register(Queue)
 class QueueAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'email_address', 'locale')
-    prepopulated_fields = {"slug": ("title",)}
 
 
 @admin.register(Ticket)
@@ -58,6 +57,10 @@ class EmailTemplateAdmin(admin.ModelAdmin):
     list_display = ('template_name', 'heading', 'locale')
     list_filter = ('locale', )
 
+
+@admin.register(SLA)
+class CustomFieldAdmin(admin.ModelAdmin):
+    list_display = ('title', )
 
 admin.site.register(PreSetReply)
 admin.site.register(EscalationExclusion)
