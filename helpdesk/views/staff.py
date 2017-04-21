@@ -35,7 +35,7 @@ from helpdesk.lib import (
 )
 from helpdesk.models import (
     Ticket, Queue, FollowUp, TicketChange, PreSetReply, Attachment, SavedSearch,
-    IgnoreEmail, TicketCC, TicketDependency,
+    IgnoreEmail, TicketCC, TicketDependency, SLA
 )
 from helpdesk import settings as helpdesk_settings
 
@@ -958,6 +958,8 @@ def create_ticket(request):
         form = TicketForm(request.POST, request.FILES)
         form.fields['queue'].choices = [('', '--------')] + [
             (q.id, q.title) for q in Queue.objects.all()]
+        form.fields['sla'].choices = [('', '--------')] + [
+            (s.id, s.title) for s in SLA.objects.all()]
         form.fields['assigned_to'].choices = [('', '--------')] + [
             (u.id, u.get_username()) for u in assignable_users]
         if form.is_valid():
@@ -976,6 +978,8 @@ def create_ticket(request):
         form = TicketForm(initial=initial_data)
         form.fields['queue'].choices = [('', '--------')] + [
             (q.id, q.title) for q in Queue.objects.all()]
+        form.fields['sla'].choices = [('', '--------')] + [
+            (s.id, s.title) for s in SLA.objects.all()]
         form.fields['assigned_to'].choices = [('', '--------')] + [
             (u.id, u.get_username()) for u in assignable_users]
         if helpdesk_settings.HELPDESK_CREATE_TICKET_HIDE_ASSIGNED_TO:

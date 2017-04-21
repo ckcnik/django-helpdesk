@@ -19,7 +19,7 @@ from django.utils import timezone
 
 from helpdesk.lib import send_templated_mail, safe_template_context, process_attachments
 from helpdesk.models import (Ticket, Queue, FollowUp, Attachment, IgnoreEmail, TicketCC,
-                             CustomField, TicketCustomFieldValue, TicketDependency)
+                             CustomField, TicketCustomFieldValue, TicketDependency, SLA)
 from helpdesk import settings as helpdesk_settings
 
 User = get_user_model()
@@ -148,6 +148,13 @@ class AbstractTicketForm(CustomFieldMixin, forms.Form):
         label=_('Summary of the problem'),
     )
 
+    sla = forms.ChoiceField(
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label=_('SLA'),
+        required=False,
+        choices=()
+    )
+
     body = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'form-control'}),
         label=_('Description of your issue'),
@@ -193,12 +200,17 @@ class AbstractTicketForm(CustomFieldMixin, forms.Form):
 
     def _create_ticket(self):
         queue = Queue.objects.get(id=int(self.cleaned_data['queue']))
+        if self.cleaned_data['sla']:
+            sla = SLA.objects.get(id=int(self.cleaned_data['sla']))
+        else:
+            sla = None
 
         ticket = Ticket(title=self.cleaned_data['title'],
                         submitter_email=self.cleaned_data['submitter_email'],
                         created=timezone.now(),
                         status=Ticket.OPEN_STATUS,
                         queue=queue,
+                        sla=sla,
                         description=self.cleaned_data['body'],
                         priority=self.cleaned_data['priority'],
                         due_date=self.cleaned_data['due_date'],
