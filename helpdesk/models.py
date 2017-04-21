@@ -19,6 +19,15 @@ from django.utils.encoding import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible
+class SLA(models.Model):
+    name = models.CharField(_('Name'), max_length=100)
+
+    class Meta:
+        verbose_name = _('SLA')
+        verbose_name_plural = _('SLA')
+
+
+@python_2_unicode_compatible
 class Queue(models.Model):
     """
     A queue is a collection of tickets into what would generally be business
@@ -463,6 +472,13 @@ class Ticket(models.Model):
         editable=False,
         help_text=_('The date this ticket was last escalated - updated '
                     'automatically by management/commands/escalate_tickets.py.'),
+    )
+
+    sla = models.ForeignKey(
+        SLA,
+        verbose_name=_('SLA'),
+        blank=True,
+        null=True,
     )
 
     def _get_assigned_to(self):
